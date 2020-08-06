@@ -1,6 +1,7 @@
 Getting SDL to play nice on Droid 4
-![sdl1.2 with opengl->gl4es] (screenshots/lgs-ba-arx_libertatis.jpg "Arx Libertatis")
-![Plain sdl1.2] (screenshots/lgs-aa-openjazz.jpg "OpenJazz")
+
+![sdl1.2 with opengl->gl4es](screenshots/lgs-ba-arx_libertatis.jpg)
+![Plain sdl1.2 ](screenshots/lgs-aa-openjazz.jpg)
 
                          Simple DirectMedia Layer
 
