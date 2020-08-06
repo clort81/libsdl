@@ -350,10 +350,10 @@ static void create_aux_windows(_THIS)
     xattr.colormap = SDL_XColorMap;
 
     FSwindow = XCreateWindow(SDL_Display, SDL_Root,
-                             x, y, 32, 32, 0,
+// Clort why x,y and not zero zero?                            x, y, 32, 32, 0,
+                             0, 0, 32, 32, 0,
 			     this->hidden->depth, InputOutput, SDL_Visual,
-			     CWOverrideRedirect | CWBackPixel | CWBorderPixel
-			     | CWColormap,
+			     CWBackPixel | CWBorderPixel | CWColormap,
 			     &xattr);
 
     XSelectInput(SDL_Display, FSwindow, StructureNotifyMask);
@@ -373,6 +373,14 @@ static void create_aux_windows(_THIS)
 	ev.xclient.data.l[1] = CurrentTime;
 	mask = SubstructureRedirectMask;
 	XSendEvent(SDL_Display, SDL_Root, False, mask, &ev);
+    }
+
+    /* Tell KDE^H^H^Hhildon-cr^H^H^H-desktop to treat the window fullscreen */
+    {   
+	Atom a = XInternAtom(SDL_Display, "_NET_WM_STATE_FULLSCREEN", True); // Clort WHY FALSE WHAT?
+	XChangeProperty(SDL_Display, FSwindow,
+			XInternAtom(SDL_Display, "_NET_WM_STATE", False),
+			XA_ATOM, 32, PropModePrepend, (void*)&a, 1);
     }
 
     hints = NULL;
@@ -1088,10 +1096,8 @@ static int X11_CreateWindow(_THIS, SDL_Surface *screen,
 		}
 	}
 
-#if 0 /* This is an experiment - are the graphics faster now? - nope. */
 	if ( SDL_getenv("SDL_VIDEO_X11_BACKINGSTORE") )
-#endif
-	/* Cache the window in the server, when possible */
+	/* Cache the window in the server when possible, on request */
 	{
 		Screen *xscreen;
 		XSetWindowAttributes a;
@@ -1107,13 +1113,13 @@ static int X11_CreateWindow(_THIS, SDL_Surface *screen,
 	/* Map them both and go fullscreen, if requested */
 	if ( ! SDL_windowid ) {
 		XMapWindow(SDL_Display, SDL_Window);
-		XMapWindow(SDL_Display, WMwindow);
-		X11_WaitMapped(this, WMwindow);
 		if ( flags & SDL_FULLSCREEN ) {
 			screen->flags |= SDL_FULLSCREEN;
 			X11_EnterFullScreen(this);
 		} else {
 			screen->flags &= ~SDL_FULLSCREEN;
+			XMapWindow(SDL_Display, WMwindow);
+			X11_WaitMapped(this, WMwindow);
 		}
 	}
 	
@@ -1177,8 +1183,6 @@ SDL_Surface *X11_SetVideoMode(_THIS, SDL_Surface *current,
 			current = NULL;
 			goto done;
 		}
-		X11_PendingConfigureNotifyWidth = width;
-		X11_PendingConfigureNotifyHeight = height;
 	} else {
 		if (X11_CreateWindow(this,current,width,height,bpp,flags) < 0) {
 			current = NULL;
@@ -1220,6 +1224,10 @@ SDL_Surface *X11_SetVideoMode(_THIS, SDL_Surface *current,
 		current->w = width;
 		current->h = height;
 		current->pitch = SDL_CalculatePitch(current);
+		if (!current->pitch) {
+			current = NULL;
+			goto done;
+		}
 		if (X11_ResizeImage(this, current, flags) < 0) {
 			current = NULL;
 			goto done;
