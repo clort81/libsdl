@@ -117,6 +117,20 @@ static AudioBootStrap *bootstrap[] = {
 };
 SDL_AudioDevice *current_audio = NULL;
 
+/*
+ * Synchronization objects that need to be accessible in libsdlmixer.
+ *
+ * SDL_mixer_lock:
+ *	Which will be current_audio->mixer_lock.
+ * SDL_mixer_blocker:
+ *	Used by libsdlmixer in the audio thread to implement blocking,
+ *	and by us to unblock it.
+ *
+ * Curiously gcc seems to assume private visibility, so let's override it.
+ */
+SDL_mutex *SDL_mixer_lock __attribute__((visibility("default")));
+SDL_sem *SDL_mixer_blocker __attribute__((visibility("default")));
+
 /* Various local functions */
 int SDL_AudioInit(const char *driver_name);
 void SDL_AudioQuit(void);
@@ -176,7 +190,6 @@ int SDLCALL SDL_RunAudio(void *audiop)
 
 	/* Loop, filling the audio buffers */
 	while ( audio->enabled ) {
-
 		/* Fill the current buffer with sound */
 		if ( audio->convert.needed ) {
 			if ( audio->convert.buf ) {
@@ -197,6 +210,12 @@ int SDLCALL SDL_RunAudio(void *audiop)
 			SDL_mutexP(audio->mixer_lock);
 			(*fill)(udata, stream, stream_len);
 			SDL_mutexV(audio->mixer_lock);
+
+			/* As fill() may block we have to recheck the flags
+			 * and pretend we did the right thing. */
+			if ( ! audio->enabled || audio->paused) {
+				SDL_memset(stream, silence, stream_len);
+			}
 		}
 
 		/* Convert the audio if necessary */
@@ -478,12 +497,13 @@ int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
 	/* Uses interrupt driven audio, without thread */
 #else
 	/* Create a semaphore for locking the sound buffers */
-	audio->mixer_lock = SDL_CreateMutex();
+	audio->mixer_lock = SDL_mixer_lock = SDL_CreateMutex();
 	if ( audio->mixer_lock == NULL ) {
 		SDL_SetError("Couldn't create mixer lock");
 		SDL_CloseAudio();
 		return(-1);
 	}
+	SDL_mixer_blocker = SDL_CreateSemaphore(0);
 #endif /* SDL_THREADS_DISABLED */
 
 	/* Calculate the silence and size of the audio specification */
@@ -626,10 +646,14 @@ void SDL_AudioQuit(void)
 	if ( audio ) {
 		audio->enabled = 0;
 		if ( audio->thread != NULL ) {
+			/* Unblock libsdlmixer, so SDL_RunAudio
+			 * can return. */
+			SDL_SemPost(SDL_mixer_blocker);
 			SDL_WaitThread(audio->thread, NULL);
 		}
 		if ( audio->mixer_lock != NULL ) {
 			SDL_DestroyMutex(audio->mixer_lock);
+			SDL_mixer_lock = NULL;
 		}
 		if ( audio->fake_stream != NULL ) {
 			SDL_FreeAudioMem(audio->fake_stream);
@@ -641,6 +665,12 @@ void SDL_AudioQuit(void)
 		if ( audio->opened ) {
 			audio->CloseAudio(audio);
 			audio->opened = 0;
+		}
+		if ( SDL_mixer_blocker ) {
+			/* The thread has finished, so it is safe
+			 * to destroy it. */
+			SDL_DestroySemaphore(SDL_mixer_blocker);
+			SDL_mixer_blocker = NULL;
 		}
 		/* Free the driver data */
 		audio->free(audio);

@@ -1,8 +1,8 @@
-Index: SDL-1.2.13/src/audio/SDL_audio.c
-===================================================================
---- SDL-1.2.13.orig/src/audio/SDL_audio.c	2009-08-05 18:21:51.000000000 +0300
-+++ SDL-1.2.13/src/audio/SDL_audio.c	2009-08-05 18:22:15.000000000 +0300
-@@ -117,6 +117,20 @@
+diff --git a/src/audio/SDL_audio.c b/src/audio/SDL_audio.c
+index beb26e0..656c9ec 100644
+--- a/src/audio/SDL_audio.c
++++ b/src/audio/SDL_audio.c
+@@ -117,6 +117,20 @@ static AudioBootStrap *bootstrap[] = {
  };
  SDL_AudioDevice *current_audio = NULL;
  
@@ -23,7 +23,7 @@ Index: SDL-1.2.13/src/audio/SDL_audio.c
  /* Various local functions */
  int SDL_AudioInit(const char *driver_name);
  void SDL_AudioQuit(void);
-@@ -176,7 +190,6 @@
+@@ -176,7 +190,6 @@ int SDLCALL SDL_RunAudio(void *audiop)
  
  	/* Loop, filling the audio buffers */
  	while ( audio->enabled ) {
@@ -31,7 +31,7 @@ Index: SDL-1.2.13/src/audio/SDL_audio.c
  		/* Fill the current buffer with sound */
  		if ( audio->convert.needed ) {
  			if ( audio->convert.buf ) {
-@@ -197,6 +210,12 @@
+@@ -197,6 +210,12 @@ int SDLCALL SDL_RunAudio(void *audiop)
  			SDL_mutexP(audio->mixer_lock);
  			(*fill)(udata, stream, stream_len);
  			SDL_mutexV(audio->mixer_lock);
@@ -44,7 +44,7 @@ Index: SDL-1.2.13/src/audio/SDL_audio.c
  		}
  
  		/* Convert the audio if necessary */
-@@ -478,12 +497,13 @@
+@@ -478,12 +497,13 @@ int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained)
  	/* Uses interrupt driven audio, without thread */
  #else
  	/* Create a semaphore for locking the sound buffers */
@@ -59,7 +59,7 @@ Index: SDL-1.2.13/src/audio/SDL_audio.c
  #endif /* SDL_THREADS_DISABLED */
  
  	/* Calculate the silence and size of the audio specification */
-@@ -626,10 +646,14 @@
+@@ -626,10 +646,14 @@ void SDL_AudioQuit(void)
  	if ( audio ) {
  		audio->enabled = 0;
  		if ( audio->thread != NULL ) {
@@ -74,7 +74,7 @@ Index: SDL-1.2.13/src/audio/SDL_audio.c
  		}
  		if ( audio->fake_stream != NULL ) {
  			SDL_FreeAudioMem(audio->fake_stream);
-@@ -642,6 +666,12 @@
+@@ -642,6 +666,12 @@ void SDL_AudioQuit(void)
  			audio->CloseAudio(audio);
  			audio->opened = 0;
  		}

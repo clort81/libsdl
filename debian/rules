@@ -1,10 +1,11 @@
 #!/usr/bin/make -f
 
+include /usr/share/dpkg/architecture.mk
+include /usr/share/dpkg/pkg-info.mk
+
 SHLIBVER = 1.2.11
 
-DEB_HOST_ARCH_CPU ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
-
-confflags = --disable-rpath --enable-sdl-dlopen --disable-loadso \
+confflags = --disable-rpath --enable-sdl-dlopen \
             --disable-video-ggi --disable-video-svga --disable-video-aalib \
             --disable-nas --disable-esd --disable-arts \
             --disable-alsa-shared --disable-pulseaudio-shared \
@@ -23,12 +24,8 @@ ifneq (,$(findstring $(DEB_HOST_ARCH_CPU),powerpc ppc64))
 endif
 
 
-# for reproducible builds, timestamps_in_tarball
-SOURCE_DATE := $(shell dpkg-parsechangelog --show-field=Date)
-
-
 %:
-	dh $@ --with autoreconf --parallel
+	dh $@
 
 override_dh_autoreconf:
         # aclocal needs to include in specific order, and/or it seems that
@@ -62,21 +59,20 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 	dh_auto_build
-	GZIP="-9n" tar czf debian/examples.tar.gz test --owner=0 --group=0 --mode=go=rX,u+rw,a-s --clamp-mtime --mtime="$(SOURCE_DATE)" --sort=name
+	GZIP="-9n" tar czf debian/examples.tar.gz test --owner=0 --group=0 --mode=go=rX,u+rw,a-s --clamp-mtime --mtime="@$(SOURCE_DATE_EPOCH)" --sort=name
 
 override_dh_auto_clean:
 	dh_auto_clean
 	rm -f debian/examples.tar.gz
 
 override_dh_install:
-	dh_install --fail-missing -XlibSDL.la -XlibSDLmain.la
+	dh_install -XlibSDL.la -XlibSDLmain.la
+
+override_dh_missing:
+	dh_missing --fail-missing -XlibSDL.la -XlibSDLmain.la
 
 override_dh_installdocs:
 	dh_installdocs -Xdocs/man3/SDL
-
-override_dh_installexamples:
-	dh_installexamples -plibsdl1.2-dev debian/examples.tar.gz
-	dh_installexamples --remaining-packages
 
 override_dh_makeshlibs:
 	dh_makeshlibs -V"libsdl1.2debian (>= $(SHLIBVER))"

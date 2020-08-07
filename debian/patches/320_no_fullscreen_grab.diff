@@ -1,6 +1,8 @@
+diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
+index 46285c9..4465d52 100644
 --- a/src/video/SDL_video.c
 +++ b/src/video/SDL_video.c
-@@ -1889,13 +1889,9 @@
+@@ -1889,13 +1889,9 @@ SDL_GrabMode SDL_WM_GrabInput(SDL_GrabMode mode)
  #ifdef DEBUG_GRAB
    printf("SDL_WM_GrabInput(%d) ... ", mode);
  #endif
@@ -14,9 +16,11 @@
  	return(SDL_WM_GrabInputRaw(mode));
  }
  static SDL_GrabMode SDL_WM_GrabInputOff(void)
+diff --git a/src/video/x11/SDL_x11events.c b/src/video/x11/SDL_x11events.c
+index 9ac3548..c749c46 100644
 --- a/src/video/x11/SDL_x11events.c
 +++ b/src/video/x11/SDL_x11events.c
-@@ -478,6 +478,12 @@
+@@ -478,6 +478,12 @@ printf("FocusIn!\n");
  #ifdef DEBUG_XEVENTS
  printf("FocusOut!\n");
  #endif

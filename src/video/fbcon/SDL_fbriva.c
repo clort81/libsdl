@@ -24,12 +24,10 @@
 #include "SDL_video.h"
 #include "../SDL_blit.h"
 #include "SDL_fbriva.h"
-#include "riva_mmio.h"
 #include "riva_regs.h"
 
 
 static int FifoEmptyCount = 0;
-static int FifoFreeCount = 0;
 
 /* Wait for vertical retrace */
 static void WaitVBL(_THIS)
@@ -39,20 +37,6 @@ static void WaitVBL(_THIS)
 	while (  (*port & 0x08) )
 		;
 	while ( !(*port & 0x08) )
-		;
-}
-static void NV3WaitIdle(_THIS)
-{
-	RivaRop *Rop = (RivaRop *)(mapped_io + ROP_OFFSET);
-	while ( (Rop->FifoFree < FifoEmptyCount) ||
-	        (*(mapped_io + PGRAPH_OFFSET + 0x000006B0) & 0x01) )
-		;
-}
-static void NV4WaitIdle(_THIS)
-{
-	RivaRop *Rop = (RivaRop *)(mapped_io + ROP_OFFSET);
-	while ( (Rop->FifoFree < FifoEmptyCount) ||
-	        (*(mapped_io + PGRAPH_OFFSET + 0x00000700) & 0x01) )
 		;
 }
 
@@ -74,7 +58,6 @@ static int FillHWRect(_THIS, SDL_Surface *dst, SDL_Rect *rect, Uint32 color)
 {
 	int dstX, dstY;
 	int dstW, dstH;
-	RivaBitmap *Bitmap = (RivaBitmap *)(mapped_io + BITMAP_OFFSET);
 
 	/* Don't blit to the display surface when switched away */
 	if ( switched_away ) {
@@ -93,13 +76,6 @@ static int FillHWRect(_THIS, SDL_Surface *dst, SDL_Rect *rect, Uint32 color)
 	dstX += rect->x;
 	dstY += rect->y;
 
-	RIVA_FIFO_FREE(Bitmap, 1);
-	Bitmap->Color1A = color;
-
-	RIVA_FIFO_FREE(Bitmap, 2);
-	Bitmap->UnclippedRectangle[0].TopLeft     = (dstX << 16) | dstY; 
-	Bitmap->UnclippedRectangle[0].WidthHeight = (dstW << 16) | dstH;
-
 	FB_AddBusySurface(dst);
 
 	if ( dst == this->screen ) {
@@ -115,7 +91,6 @@ static int HWAccelBlit(SDL_Surface *src, SDL_Rect *srcrect,
 	int srcX, srcY;
 	int dstX, dstY;
 	int dstW, dstH;
-	RivaScreenBlt *Blt = (RivaScreenBlt *)(mapped_io + BLT_OFFSET);
 
 	/* FIXME: For now, only blit to display surface */
 	if ( dst->pitch != SDL_VideoSurface->pitch ) {
@@ -141,11 +116,6 @@ static int HWAccelBlit(SDL_Surface *src, SDL_Rect *srcrect,
 	srcY += srcrect->y;
 	dstX += dstrect->x;
 	dstY += dstrect->y;
-
-	RIVA_FIFO_FREE(Blt, 3);
-	Blt->TopLeftSrc  = (srcY << 16) | srcX;
-	Blt->TopLeftDst  = (dstY << 16) | dstX;
-	Blt->WidthHeight = (dstH  << 16) | dstW;
 
 	FB_AddBusySurface(src);
 	FB_AddBusySurface(dst);
@@ -185,23 +155,15 @@ static int CheckHWBlit(_THIS, SDL_Surface *src, SDL_Surface *dst)
 
 void FB_RivaAccel(_THIS, __u32 card)
 {
-	RivaRop *Rop = (RivaRop *)(mapped_io + ROP_OFFSET);
 
 	/* We have hardware accelerated surface functions */
 	this->CheckHWBlit = CheckHWBlit;
 	wait_vbl = WaitVBL;
 	switch (card) {
-	    case FB_ACCEL_NV3:
-		wait_idle = NV3WaitIdle;
-		break;
-	    case FB_ACCEL_NV4:
-		wait_idle = NV4WaitIdle;
-		break;
 	    default:
 		/* Hmm... FIXME */
 		break;
 	}
-	FifoEmptyCount = Rop->FifoFree;
 
 	/* The Riva has an accelerated color fill */
 	this->info.blit_fill = 1;

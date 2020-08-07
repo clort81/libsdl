@@ -1889,12 +1889,8 @@ SDL_GrabMode SDL_WM_GrabInput(SDL_GrabMode mode)
 #ifdef DEBUG_GRAB
   printf("SDL_WM_GrabInput(%d) ... ", mode);
 #endif
-	/* If the video surface is fullscreen, we always grab */
 	if ( mode >= SDL_GRAB_FULLSCREEN ) {
 		mode -= SDL_GRAB_FULLSCREEN;
-	}
-	if ( SDL_VideoSurface && (SDL_VideoSurface->flags & SDL_FULLSCREEN) ) {
-		mode += SDL_GRAB_FULLSCREEN;
 	}
 	return(SDL_WM_GrabInputRaw(mode));
 }

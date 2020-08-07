@@ -57,12 +57,6 @@ static SDLKey ODD_keymap[256];
 static SDLKey MISC_keymap[256];
 SDLKey X11_TranslateKeycode(Display *display, KeyCode kc);
 
-/*
- Pending resize target for ConfigureNotify (so outdated events don't
- cause inappropriate resize events)
-*/
-int X11_PendingConfigureNotifyWidth = -1;
-int X11_PendingConfigureNotifyHeight = -1;
 
 #ifdef X_HAVE_UTF8_STRING
 Uint32 Utf8ToUcs4(const Uint8 *utf8)
@@ -451,7 +445,7 @@ printf("Mode: NotifyUngrab\n");
 		     (xevent.xcrossing.mode != NotifyUngrab) &&
 		     (xevent.xcrossing.detail != NotifyInferior) ) {
                		if ( this->input_grab == SDL_GRAB_OFF ) {
-				posted = SDL_PrivateAppActive(0, SDL_APPMOUSEFOCUS);
+				/* don't tell the application */;
 			} else {
 				posted = SDL_PrivateMouseMotion(0, 0,
 						xevent.xcrossing.x,
@@ -484,6 +478,12 @@ printf("FocusIn!\n");
 #ifdef DEBUG_XEVENTS
 printf("FocusOut!\n");
 #endif
+
+                /* Someone's (possibly the volume plugin's) passive key grab
+                 * may have activated, ignore it. */
+                if (xevent.xfocus.mode == NotifyGrab)
+                  break;
+
 		posted = SDL_PrivateAppActive(0, SDL_APPINPUTFOCUS);
 
 #ifdef X_HAVE_UTF8_STRING
@@ -493,7 +493,7 @@ printf("FocusOut!\n");
 #endif
 		/* Queue leaving fullscreen mode */
 		switch_waiting = 0x01;
-		switch_time = SDL_GetTicks() + 200;
+		switch_time = SDL_GetTicks();
 	    }
 	    break;
 
@@ -825,16 +825,6 @@ printf("MapNotify!\n");
 #ifdef DEBUG_XEVENTS
 printf("ConfigureNotify! (resize: %dx%d)\n", xevent.xconfigure.width, xevent.xconfigure.height);
 #endif
-		if ((X11_PendingConfigureNotifyWidth != -1) &&
-		    (X11_PendingConfigureNotifyHeight != -1)) {
-		    if ((xevent.xconfigure.width != X11_PendingConfigureNotifyWidth) &&
-			(xevent.xconfigure.height != X11_PendingConfigureNotifyHeight)) {
-			    /* Event is from before the resize, so ignore. */
-			    break;
-		    }
-		    X11_PendingConfigureNotifyWidth = -1;
-		    X11_PendingConfigureNotifyHeight = -1;
-		}
 		if ( SDL_VideoSurface ) {
 		    if ((xevent.xconfigure.width != SDL_VideoSurface->w) ||
 		        (xevent.xconfigure.height != SDL_VideoSurface->h)) {
@@ -955,11 +945,7 @@ void X11_PumpEvents(_THIS)
 		now  = SDL_GetTicks();
 		if ( pending || !SDL_VideoSurface ) {
 			/* Try again later... */
-			if ( switch_waiting & SDL_FULLSCREEN ) {
-				switch_time = now + 1500;
-			} else {
-				switch_time = now + 200;
-			}
+			/* ...but in this century, if possible. */
 		} else if ( (int)(switch_time-now) <= 0 ) {
 			Uint32 go_fullscreen;
 
@@ -1246,14 +1232,23 @@ static void get_modifier_masks(Display *display)
  * sequences (dead accents, compose key sequences) will not work since the
  * state has been irrevocably lost.
  */
+extern DECLSPEC Uint16 SDLCALL X11_KeyToUnicode(SDLKey, SDLMod);
+
 Uint16 X11_KeyToUnicode(SDLKey keysym, SDLMod modifiers)
 {
+	static int warning = 1;
 	struct SDL_VideoDevice *this = current_video;
 	char keybuf[32];
 	int i;
 	KeySym xsym = 0;
 	XKeyEvent xkey;
 	Uint16 unicode;
+
+	if ( warning ) {
+		warning = 0;
+		fprintf(stderr, "WARNING: Application is using X11_KeyToUnicode().\n");
+		fprintf(stderr, "This is not an official SDL function, please report this as a bug.\n");
+	}
 
 	if ( !this || !SDL_Display ) {
 		return 0;

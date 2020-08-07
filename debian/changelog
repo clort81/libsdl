@@ -1,8 +1,114 @@
-libsdl1.2 (1.2.15+dfsg1-4+maemo1) unstable; urgency=high
+libsdl1.2 (1:1.2.15-7+2m7.1) unstable; urgency=medium
 
-  * Add Fremantle patches.
+  * Increment build number
 
- -- Robert Irvin <android_808@hotmail.com>  Sat, 03 Mar 2018 12:17:24 +0000
+ -- Jenkins Auto Builder <spam1@wizzup.org>  Thu, 16 Jul 2020 11:33:46 +0100
+
+libsdl1.2 (1:1.2.15-7) unstable; urgency=medium
+
+  * Add rebased Maemo Fremantle patches.
+
+ -- Ivan J. <parazyd@dyne.org>  Mon, 13 Jul 2020 11:25:49 +0200
+
+libsdl1.2 (1.2.15+dfsg2-6) UNRELEASED; urgency=medium
+
+  * Trim trailing whitespace.
+  * Re-export upstream signing key without extra signatures.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Thu, 24 Oct 2019 09:14:10 +0000
+
+libsdl1.2 (1.2.15+dfsg2-5) unstable; urgency=medium
+
+  [ Abhijith PA ]
+  * Fix CVE-2019-7572, CVE-2019-7573, CVE-2019-7574, CVE-2019-7575
+    CVE-2019-7576, CVE-2019-7577, CVE-2019-7578, CVE-2019-7635, CVE-2019-7636
+    CVE-2019-7637, CVE-2019-7638
+    (Closes: #924609)
+
+  [ Felix Geyer ]
+  * Fix CVE-2019-13616
+
+ -- Felix Geyer <fgeyer@debian.org>  Tue, 17 Sep 2019 22:34:12 +0200
+
+libsdl1.2 (1.2.15+dfsg2-4) unstable; urgency=medium
+
+  * d/rules: Add @ in 'tar --mtime="@$(SOURCE_DATE_EPOCH)"', otherwise the
+    date is not valid
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Thu, 25 Oct 2018 01:47:02 +0200
+
+libsdl1.2 (1.2.15+dfsg2-3) unstable; urgency=medium
+
+  * Bump Policy Standards-Version to 4.2.1 (no changes needed)
+  * d/control
+    - Use https in Homepage URL
+    - Set "Rules-Requires-Root: no"
+    - Drop ancient build-dependency on "dpkg-dev (>= 1.16.1~)"
+  * d/watch: use https in URL
+  * d/copyright: use https in Format, Source and Upstream-Contact URLs
+  * Switch to debhelper compat level v11
+    - Drop "--with autoreconf --parallel", they are the default now, and
+      build-dependency on dh-autoreconf
+    - Drop override of dh_installexamples and instead use file
+      debian/libsdl1.2-dev.examples
+  * d/rules:
+    - include /usr/share/dpkg/architecture.mk and .../pkg-info.mk to
+      provide DEB_HOST_* and SOURCE_DATE_EPOCH, instead of getting them
+      through shell invocations.
+    - dh_install --fail-missing is deprecated and about to be removed,
+      use dh_missing instead
+
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Sat, 20 Oct 2018 14:25:59 +0200
+
+libsdl1.2 (1.2.15+dfsg2-2) unstable; urgency=medium
+
+  [ Gianfranco Costamagna ]
+  * Team upload
+
+  [ Ryan C. Gordon (icculus) ]
+  * Disable --disable-loadso switch, it was useless and it is wrong
+    in many cases (see LP: #1740517 for discussion)
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Fri, 14 Sep 2018 19:52:34 +0200
+
+libsdl1.2 (1.2.15+dfsg2-1) unstable; urgency=medium
+
+  * Team upload
+  * Ack previous NMU, thanks
+  * debian/patches/SDL-1.2.15-vec_perm-ppc64le.patch:
+    - fix test failures on ppc64el, by fixing a wrong ordering on BE
+      systems. Thanks Frédéric Bonnard for the patch!
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Wed, 30 May 2018 15:27:49 +0200
+
+libsdl1.2 (1.2.15+dfsg2-0.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+
+  [ Manuel A. Fernandez Montecelo ]
+  * Do not build-depend on libaudiofile, unused.
+    Closes: #857670
+
+  [ Jonas Smedegaard ]
+  * Add script to check copyright and licensing of source.
+  * Update copyright info:
+    + Rewrite copyright file in machine-readable format.
+    + Fix cover many secondary copyright holders and licenses.
+  * Repackage upstream source to exclude more potentially non-DFSG code,
+    and add patch to avoid missing code.
+    Closes: Bug#834204.
+  * Update watch file:
+    + Bump to version 4.
+    + Add usage comment.
+    + Set repacksuffix.
+  * Drop repackaging hints from git-buildpackage config: Handled by
+    uscan + machine-readable copyright file.
+  * Add lintian overrides regarding license in License-Reference field.
+    See bug#786450.
+  * Add lintian overrides regarding license name used both alone an in
+    composition.
+
+ -- Jonas Smedegaard <dr@jones.dk>  Tue, 18 Jul 2017 13:46:21 +0200
 
 libsdl1.2 (1.2.15+dfsg1-4) unstable; urgency=high
 
@@ -247,7 +353,7 @@ libsdl1.2 (1.2.14-7) unstable; urgency=low
 libsdl1.2 (1.2.14-6.4) unstable; urgency=low
 
   * Non-maintainer upload.
-  * Build improvements from Guillem Jover that should really have gone 
+  * Build improvements from Guillem Jover that should really have gone
     with the previous upload. Closes: #614332.
     + Line-wrap build-depends.
     + Use -any syntax for architecture-specific stuff.
@@ -264,9 +370,9 @@ libsdl1.2 (1.2.14-6.4) unstable; urgency=low
 libsdl1.2 (1.2.14-6.3) unstable; urgency=low
 
   * Non-maintainer upload with maintainer’s approval.
-  * Merge all builds into a single one, there is no more a reason to 
+  * Merge all builds into a single one, there is no more a reason to
     keep all these packages.
-  * Remove support for libaa (there’s libcaca), libsvga (directfb 
+  * Remove support for libaa (there’s libcaca), libsvga (directfb
     supports more architectures) and libesd (pulseaudio does much more).
   * Remove obsolete sys-build.mk from source directory.
 
@@ -280,7 +386,7 @@ libsdl1.2 (1.2.14-6.2) unstable; urgency=low
     - Remove libsdl1.2debian-arts.
     - Remove references to arts in other packages that this source provides.
     - Pass --disable-arts to the configure script.
-  
+
   [ Ana Beatriz Guerrero Lopez ]
 
   * Update uploaders, remove aurel32, joss and sho.
@@ -319,7 +425,7 @@ libsdl1.2 (1.2.14-5) unstable; urgency=low
 
 libsdl1.2 (1.2.14-4) unstable; urgency=low
 
-  * Move -dev Recommends back to Depends, as other packages may want to 
+  * Move -dev Recommends back to Depends, as other packages may want to
     statically link with libsdl.a. (Closes: #565579).
 
  -- Aurelien Jarno <aurel32@debian.org>  Sun, 31 Jan 2010 11:57:35 +0100
@@ -373,7 +479,7 @@ libsdl1.2 (1.2.13-5) unstable; urgency=low
   * Remove duplicate sections from binary packages.
   * Bump debhelper build-dep version and compat to 5.
   * Bump Standards Version to 3.8.3
- 
+
   [ Aurelien Jarno ]
   * 100_config_update.diff: update config.guess/sub. (Closes: #549240).
 
@@ -390,7 +496,7 @@ libsdl1.2 (1.2.13-4) unstable; urgency=low
 
 libsdl1.2 (1.2.13-3) unstable; urgency=low
 
-  * Remove patch 1.2.13 to 1.2.12 downgrade from the diff.gz (Closes: 
+  * Remove patch 1.2.13 to 1.2.12 downgrade from the diff.gz (Closes:
     #472094, #467225).
   * debian/patches/211_mprotect.diff
     + Update.
@@ -401,7 +507,7 @@ libsdl1.2 (1.2.13-3) unstable; urgency=low
   * debian/control:
     + Set policy to 3.8.0.
     + Switch build-dependency to libgl1-mesa-dev from xlibmesa-gl-dev.
-    + Switch dependency of libsdl1.2-dev to libglu1-mesa-dev from 
+    + Switch dependency of libsdl1.2-dev to libglu1-mesa-dev from
       libglu1-xorg-dev.
     + Increase the number of flavour to seven from four in the description
       of libsdl1.2debian (Closes: #469378).
@@ -611,7 +717,7 @@ libsdl1.2 (1.2.10-3) unstable; urgency=low
 
   * debian/rules, debian/control:
     - Enable libsvga1 support on amd64.
-    - Explicitely disable libsvga support on other architectures to make 
+    - Explicitely disable libsvga support on other architectures to make
       sure that the resulting library will not be linked with libsvga1 if
       libsvga1-dev is installed on the system.
 
@@ -765,7 +871,7 @@ libsdl1.2 (1.2.9-4) unstable; urgency=low
 
   * debian/patches/015_kfreebsd_gnu.diff:
     + New patch: Fixes for joystick support on GNU/kFreeBSD.
-    
+
  -- Aurelien Jarno <aurel32@debian.org>  Fri,  3 Mar 2006 20:14:19 +0100
 
 libsdl1.2 (1.2.9-3) unstable; urgency=low
@@ -925,7 +1031,7 @@ libsdl1.2 (1.2.7+1.2.8cvs20041007-5) unstable; urgency=high
     disc is mounted in the filesystem. Removing O_EXCL from open()
     call fixes this.
   * gcc4 compilation (patch 006_gcc4_compilation_fix.diff) (Closes: 294475)
-  * add ppc64 arch to libasound2-dev build depends (add ppc64 to 
+  * add ppc64 arch to libasound2-dev build depends (add ppc64 to
     debian/control and control.in) (Closes: 304527)
 
  -- Lawrence Williams <lawrence_cecil_williams@hotmail.com>  Mon, 30 May 2005 17:15:10 -0330
@@ -985,10 +1091,10 @@ libsdl1.2 (1.2.7+1.2.8cvs20041007-1) unstable; urgency=medium
   * Updated to 07/10/2004 CVS.
   * Added --static-libs to sdl-config manpage.
   * Added NAS support.
-  * Provide debian patches for autogen.sh ( needs automake 1.7 ) and 
+  * Provide debian patches for autogen.sh ( needs automake 1.7 ) and
     configure.in ( fix for NAS support ).
   * Added libaudio-dev, automake1.7 to Build-Depends.
-  * Added ./autogen.sh call in debian/rules ( makes package more portable 
+  * Added ./autogen.sh call in debian/rules ( makes package more portable
     and easier to maintain in the future ).
   * (Closes: 273895, 217516, 220407, 252897, 159110, 170548, 203843)
     (Closes: 238981, 264436, 159410, 137751, 213624)
@@ -997,7 +1103,7 @@ libsdl1.2 (1.2.7+1.2.8cvs20041007-1) unstable; urgency=medium
 
 libsdl1.2 (1.2.7-10) unstable; urgency=low
 
-  * Fix bashism in vars.build, patch from Andreas Metzler.  (Closes: #269855) 
+  * Fix bashism in vars.build, patch from Andreas Metzler.  (Closes: #269855)
 
  -- Matthew Danish <mrd@debian.org>  Sat,  4 Sep 2004 15:44:18 -0400
 
@@ -1009,7 +1115,7 @@ libsdl1.2 (1.2.7-9) unstable; urgency=medium
 
 libsdl1.2 (1.2.7-8) unstable; urgency=low
 
-  * Two patches from Robert Millan: (Closes: #263543) 
+  * Two patches from Robert Millan: (Closes: #263543)
     - ALSA dependency fix for certain platforms.
     - Updated libtool.
   * Removed gcc-3.4 patch, causing display bugs.  (Closes: #257257)
@@ -1042,7 +1148,7 @@ libsdl1.2 (1.2.7-5) unstable; urgency=low
   * Make libsdl1.2-dev depend upon libsvga1-dev only on i386
     (Patch thanks to Andreas Metzler) (Closes: #240907).
   * Revert Lamont's incorrect solution to #240907.
-  * Remove arch-exclusions on certain build-time libs 
+  * Remove arch-exclusions on certain build-time libs
     that don't need it anymore.  (from Lamont Jones).
 
  -- Matthew Danish <mrd@debian.org>  Fri,  2 Apr 2004 23:22:23 -0500
@@ -1095,7 +1201,7 @@ libsdl1.2 (1.2.7-1) unstable; urgency=low
 
 libsdl1.2 (1.2.6-3) unstable; urgency=low
 
-  * Patch to fix powerpc fullscreen mode.  (Closes: #210406) 
+  * Patch to fix powerpc fullscreen mode.  (Closes: #210406)
 
  -- Matthew Danish <mrd@debian.org>  Sun, 25 Jan 2004 18:32:51 -0500
 
@@ -1119,13 +1225,13 @@ libsdl1.2 (1.2.6-1) unstable; urgency=low
   * Removed -L/usr/lib from sdl-config --libs output (Closes: #185521).
   * Added Build-Conflicts on automake1.7 to work-around a FTBFS bug for now
     (Closes: #206575).
-  * Updated config.{sub,guess} 
+  * Updated config.{sub,guess}
 
  -- Matthew Danish <mrd@debian.org>  Tue,  9 Sep 2003 00:29:00 -0400
 
 libsdl1.2 (1.2.5-8) unstable; urgency=low
 
-  * Fix stupid-shell-quoting error in generating shlib file (Closes: #196875) 
+  * Fix stupid-shell-quoting error in generating shlib file (Closes: #196875)
 
  -- Matthew Danish <mrd@debian.org>  Tue, 10 Jun 2003 17:50:26 -0400
 

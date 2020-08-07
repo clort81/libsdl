@@ -1,3 +1,4 @@
-version=3
-opts=dversionmangle=s/.dfsg\d+$//,pgpsigurlmangle=s/$/.sig/ \
-  http://www.libsdl.org/release/SDL-([\d.]+)\.tar\.(?:gz|bz2|xz|lzma)
+# run "uscan --report" to check or "gpb import-orig --uscan" to update
+version=4
+opts=dversionmangle=s/.dfsg\d+$//,repacksuffix=+dfsg1,pgpsigurlmangle=s/$/.sig/ \
+  https://www.libsdl.org/release/SDL-([\d.]+)\.tar\.(?:gz|bz2|xz|lzma)
