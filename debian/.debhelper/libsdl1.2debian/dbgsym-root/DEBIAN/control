@@ -1,0 +1,15 @@
+Package: libsdl1.2debian-dbgsym
+Source: libsdl1.2
+Version: 1:1.2.15-7+2m7.1
+Auto-Built-Package: debug-symbols
+Architecture: armhf
+Maintainer: Debian SDL packages maintainers <pkg-sdl-maintainers@lists.alioth.debian.org>
+Installed-Size: 932
+Depends: libsdl1.2debian (= 1:1.2.15-7+2m7.1)
+Breaks: libsdl1.2-dbg (<< 1.2.15+dfsg1-4~)
+Replaces: libsdl1.2-dbg (<< 1.2.15+dfsg1-4~)
+Section: debug
+Priority: optional
+Multi-Arch: same
+Description: debug symbols for libsdl1.2debian
+Build-Ids: d51a6c5cad54f9873b6e7c753dcac626870b8a02

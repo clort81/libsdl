@@ -1,0 +1,19 @@
+Package: libsdl1.2debian
+Source: libsdl1.2
+Version: 1:1.2.15-7+2m7.1
+Architecture: armhf
+Maintainer: Debian SDL packages maintainers <pkg-sdl-maintainers@lists.alioth.debian.org>
+Installed-Size: 339
+Depends: libasound2 (>= 1.0.16), libc6 (>= 2.28), libcaca0 (>= 0.99.beta17-1), libpulse0 (>= 0.99.1), libts0 (>= 1.0), libx11-6 (>= 2:1.4.99.1), libxext6, libxrandr2, libxrender1
+Conflicts: libsdl1.2, libsdl1.2-all, libsdl1.2-esd, libsdl1.2-nas, libsdl1.2-oss, libsdl1.2debian-all, libsdl1.2debian-alsa, libsdl1.2debian-esd, libsdl1.2debian-nas, libsdl1.2debian-oss, libsdl1.2debian-pulseaudio
+Replaces: libsdl1.2debian-all, libsdl1.2debian-alsa, libsdl1.2debian-esd, libsdl1.2debian-nas, libsdl1.2debian-oss, libsdl1.2debian-pulseaudio
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: https://www.libsdl.org/
+Description: Simple DirectMedia Layer
+ SDL is a library that allows programs portable low level access to a video
+ framebuffer, audio output, mouse, and keyboard.
+ .
+ This version of SDL is compiled with X11 and caca graphics drivers and OSS,
+ ALSA and PulseAudio sound drivers.

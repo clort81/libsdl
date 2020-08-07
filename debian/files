@@ -1,0 +1,4 @@
+libsdl1.2-dev_1.2.15-7+2m7.1_armhf.deb libdevel optional
+libsdl1.2_1.2.15-7+2m7.1_armhf.buildinfo libs optional
+libsdl1.2debian-dbgsym_1.2.15-7+2m7.1_armhf.deb debug optional automatic=yes
+libsdl1.2debian_1.2.15-7+2m7.1_armhf.deb libs optional

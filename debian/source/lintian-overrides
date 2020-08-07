@@ -1,0 +1,11 @@
+# License is in License-Reference field (see bug#786450)
+missing-license-text-in-dep5-copyright LGPL*
+missing-license-text-in-dep5-copyright GPL*
+
+# License is in License-Reference field (see bug#786450)
+missing-license-paragraph-in-dep5-copyright lgpl*
+missing-license-paragraph-in-dep5-copyright gpl*
+
+# License name _is_ unique but is used both alone an in composition
+dep5-copyright-license-name-not-unique
+missing-license-paragraph-in-dep5-copyright fsful *
